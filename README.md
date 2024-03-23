@@ -1,4 +1,9 @@
-# rp2040-freertos-template
-This is a template project for developing FreeRTOS based applications on Raspberry Pi RP2040 based boards. This template uses the "official" RP2040 port from the Raspberry Pi Foundation. My previous repo used the generic Cortex M0 port so this one corrects that. Previous Repo retained as tutorials rely on it. 
+# Falcon Dynamics F1 core software
+Flight control software for a RP2040 MCU running FreeRTOS
 
-Unmodified, this project will spawn a single task to rapidly blink the LED on and off.
+# Building
+* Install RP2040 ARM toolkit and Pico SDK, set PICO_SDK_PATH in root CMakeLists.txt
+* Clone the repo and install all submodules with `git submodule update --init --recursive`
+* If using IDE like CLion: Open root CMakeLists.txt file with CLion and CMake project will automatically be created
+* If not using IDE: Manually create `mkdir cmake-build-debug` directory in project root
+* Build RP2040 binary: `cd cmake-build-debug` and run `cmake ..`

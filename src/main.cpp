@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
-void led_task(void* pvParameters) // Corrected function signature
-{
+void led_task(void *pvParameters) {
     const uint LED_PIN = PICO_DEFAULT_LED_PIN;
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -16,12 +15,11 @@ void led_task(void* pvParameters) // Corrected function signature
     }
 }
 
-int main()
-{
+int main() {
     stdio_init_all();
 
     xTaskCreate(led_task, "LED_Task", 256, NULL, 1, NULL);
     vTaskStartScheduler();
 
-    while(1){};
+    while (1) {};
 }

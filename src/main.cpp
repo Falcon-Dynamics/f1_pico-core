@@ -3,9 +3,8 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
-
-void led_task()
-{   
+void led_task(void* pvParameters) // Corrected function signature
+{
     const uint LED_PIN = PICO_DEFAULT_LED_PIN;
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);

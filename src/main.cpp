@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
-#include "ADXL345_RP2040/ADXL345.h"
+#include "ADXL345.h"
 
 
 ADXL345 accelerometer;

@@ -16,7 +16,7 @@ void read_sensorsTask(void *pvParameters) {
                accelerometer.getZ()
         );
 
-        vTaskDelay(50);
+        vTaskDelay(500);
     }
 }
 
@@ -41,7 +41,7 @@ int main() {
     stdio_init_all();
     setup();
 
-    xTaskCreate(led_task, "LED_Task", 256, NULL, 1, NULL);
+    xTaskCreate(read_sensorsTask, "read_sensorsTask", 256, NULL, 1, NULL);
     vTaskStartScheduler();
 
     while (1) {};

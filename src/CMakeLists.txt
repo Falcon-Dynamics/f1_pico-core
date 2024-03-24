@@ -1,5 +1,6 @@
 add_executable(${ProjectName}
         main.cpp
+        hw_config.cpp
 )
 
 target_include_directories(${ProjectName} PRIVATE

@@ -19,6 +19,7 @@ include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_i
 
 # Add libraries
 add_subdirectory(lib/ADXL345_RP2040)
+add_subdirectory(lib/no-OS-FatFs/src)
 
 # Add subdirectory of main
 add_subdirectory(src)

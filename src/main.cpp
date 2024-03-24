@@ -4,7 +4,9 @@
 #include "pico/stdlib.h"
 
 #include "ADXL345.h"
+#include "ff.h"
 
+FATFS fs;
 
 ADXL345 accelerometer;
 

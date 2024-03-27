@@ -166,4 +166,5 @@ bool Adafruit_MPL3115A2::conversionComplete(void) {
  * MPL3115A2_ALTITUDE, or MPL3115A2_TEMPERATURE
  *  @return The measurement value.
  */
-float Adafruit_MPL3115A2::getLastConversionResults(mpl
+
+//todo missing half of code

@@ -18,7 +18,8 @@ set(FREERTOS_KERNEL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/FreeRTOS-Kernel)
 include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_import.cmake)
 
 # Add libraries
-add_subdirectory(lib/ADXL345_RP2040)
+add_subdirectory(lib/ADXL345)
+add_subdirectory(lib/MPL3115A2)
 add_subdirectory(lib/no-OS-FatFs/src)
 
 # Add subdirectory of main

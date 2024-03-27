@@ -13,6 +13,7 @@ target_link_libraries(f1_pico-core
         pico_stdlib
         FreeRTOS-Kernel-Heap4
         ADXL345
+        MPL3115A2
         no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
 )
 

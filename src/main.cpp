@@ -1,6 +1,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
-#include <stdio.h>
+#include <cstdio>
 #include "pico/stdlib.h"
 
 #include "ADXL345.h"
@@ -14,6 +14,9 @@
 
 ADXL345 accelerometer;
 
+
+const TickType_t xpollRate = 500 / portTICK_PERIOD_MS;
+
 void read_sensorsTask(void *pvParameters) {
     while (true) {
         printf("X: %d Y: %d Z: %d\n",
@@ -22,7 +25,7 @@ void read_sensorsTask(void *pvParameters) {
                accelerometer.getZ()
         );
 
-        vTaskDelay(500);
+        vTaskDelay(xpollRate); //todo make absolute time delay
     }
 }
 

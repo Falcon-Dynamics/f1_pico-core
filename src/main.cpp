@@ -11,18 +11,21 @@
 #include "rtc.h"
 #include "hw_config.h"
 
+#include <RadioLib.h>
 
 ADXL345 accelerometer;
 
 
-const TickType_t xpollRate = 500 / portTICK_PERIOD_MS;
+const TickType_t xpollRate = 100 / portTICK_PERIOD_MS;
+const TickType_t xblinkRate = 1000 / portTICK_PERIOD_MS;
+
 
 void read_sensorsTask(void *pvParameters) {
     while (true) {
-        printf("X: %d Y: %d Z: %d\n",
-               accelerometer.getX(),
-               accelerometer.getY(),
-               accelerometer.getZ()
+        printf("X: %f Y: %f Z: %f\n",
+               accelerometer.getX() * ADXL345_MG2G_MULTIPLIER * SENSORS_GRAVITY_STANDARD,
+               accelerometer.getY() * ADXL345_MG2G_MULTIPLIER * SENSORS_GRAVITY_STANDARD,
+               accelerometer.getZ() * ADXL345_MG2G_MULTIPLIER * SENSORS_GRAVITY_STANDARD
         );
 
         vTaskDelay(xpollRate); //todo make absolute time delay
@@ -35,9 +38,9 @@ void led_task(void *pvParameters) {
     gpio_set_dir(LED_PIN, GPIO_OUT);
     while (true) {
         gpio_put(LED_PIN, 1);
-        vTaskDelay(100);
+        vTaskDelay(xpollRate);
         gpio_put(LED_PIN, 0);
-        vTaskDelay(100);
+        vTaskDelay(xblinkRate);
     }
 }
 
@@ -63,17 +66,19 @@ void test_SD() {
 
 void setup() {
     accelerometer.begin(ADXL345_DEFAULT_ADDRESS, i2c_default, PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN);
-    accelerometer.setRange(ADXL345_RANGE_16_G); // set 16 g range
+    accelerometer.setRange(ADXL345_RANGE_2_G); // set 2 g range
 }
 
 int main() {
     stdio_init_all();
     setup();
 
-    test_SD(); // todo test the SD
+//    test_SD(); // todo test the SD
 
     xTaskCreate(read_sensorsTask, "read_sensorsTask", 256, NULL, 1, NULL);
+    xTaskCreate(led_task, "led_task", 256, NULL, 2, NULL);
     vTaskStartScheduler();
+
 
     while (1) {};
 }

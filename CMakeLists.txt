@@ -21,6 +21,8 @@ include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_i
 add_subdirectory(lib/ADXL345)
 add_subdirectory(lib/MPL3115A2)
 add_subdirectory(lib/no-OS-FatFs/src)
+add_subdirectory(lib/RadioLib)
+
 
 # Add subdirectory of main
 add_subdirectory(src)

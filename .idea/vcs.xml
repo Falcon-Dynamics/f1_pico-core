@@ -5,6 +5,10 @@
     <mapping directory="$PROJECT_DIR$/lib/FreeRTOS-Kernel" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/FreeRTOS-Kernel/portable/ThirdParty/Community-Supported-Ports" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/FreeRTOS-Kernel/portable/ThirdParty/Partner-Supported-Ports" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/RadioLib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/RadioLib/examples/NonArduino/Tock/libtock-c" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/RadioLib/examples/NonArduino/Tock/libtock-c/lua53/lua" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/RadioLib/examples/NonArduino/Tock/libtock-c/lvgl/lvgl" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/no-OS-FatFs" vcs="Git" />
     <mapping directory="$USER_HOME$/pico/pico-sdk" vcs="Git" />
     <mapping directory="$USER_HOME$/pico/pico-sdk/lib/btstack" vcs="Git" />

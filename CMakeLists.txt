@@ -16,6 +16,8 @@ pico_sdk_init()
 set(FREERTOS_KERNEL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/FreeRTOS-Kernel)
 # Import FreeRTOS Kernel library
 include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_import.cmake)
+# add nanopb import
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/nanopb/extra)
 
 # Add libraries
 add_subdirectory(lib/ADXL345)

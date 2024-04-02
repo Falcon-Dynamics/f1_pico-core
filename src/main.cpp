@@ -13,6 +13,10 @@
 
 #include <RadioLib.h>
 
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include "simple.pb.h"
+
 ADXL345 accelerometer;
 
 

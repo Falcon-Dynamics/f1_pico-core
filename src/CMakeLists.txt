@@ -9,6 +9,10 @@ target_include_directories(${ProjectName} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+find_package(Nanopb REQUIRED)
+
+nanopb_generate_cpp(TARGET proto simple.proto)
+
 target_link_libraries(f1_pico-core
         pico_stdlib
         RadioLib
@@ -19,6 +23,7 @@ target_link_libraries(f1_pico-core
         ADXL345
         MPL3115A2
         no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
+        proto
 )
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1) # enable usb serial

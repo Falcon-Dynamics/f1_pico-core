@@ -9,6 +9,7 @@
     <mapping directory="$PROJECT_DIR$/lib/RadioLib/examples/NonArduino/Tock/libtock-c" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/RadioLib/examples/NonArduino/Tock/libtock-c/lua53/lua" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/RadioLib/examples/NonArduino/Tock/libtock-c/lvgl/lvgl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/nanopb" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/no-OS-FatFs" vcs="Git" />
     <mapping directory="$USER_HOME$/pico/pico-sdk" vcs="Git" />
     <mapping directory="$USER_HOME$/pico/pico-sdk/lib/btstack" vcs="Git" />

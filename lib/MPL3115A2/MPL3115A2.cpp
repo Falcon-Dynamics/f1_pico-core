@@ -2,17 +2,11 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
-/*!
-    @brief  Instantiates a new MPL3115A2 class
-*/
+#include <cstdio>
+#include "pico/stdlib.h"
+
 Adafruit_MPL3115A2::Adafruit_MPL3115A2() {}
 
-/*!
- *   @brief  Setups the HW (reads coefficients values, etc.)
- *   @param  twoWire
- *           Optional TwoWire I2C object
- *   @return true on successful startup, false otherwise
- */
 bool Adafruit_MPL3115A2::begin() {
     // Initialize I2C interface
     i2c_init(i2c0, 100000);
@@ -22,32 +16,41 @@ bool Adafruit_MPL3115A2::begin() {
     gpio_pull_up(1);
 
     // Initialize I2C device
-    if (!i2c_write_blocking(i2c0, MPL3115A2_ADDRESS, NULL, 0, true)) // Check if device is present
-        return false;
+    uint8_t data = 0; // Data to write, can be anything
+    if (i2c_write_blocking(i2c0, MPL3115A2_ADDRESS, &data, 1, true) != PICO_ERROR_GENERIC) {
+        // Device detected, proceed with initialization
+        uint8_t whoami = read8(MPL3115A2_WHOAMI);
+        printf("Error: MPL3115A2 WHOAMI register mismatch (Expected: 0xC4, Actual: 0x%02X)\n", whoami);
+        if (whoami != 0xC4) {
+            return false; // WHOAMI register check failed
+        }
 
-    // Sanity check
-    uint8_t whoami = read8(MPL3115A2_WHOAMI);
-    if (whoami != 0xC4) {
-        return false;
+        // Software reset
+        write8(MPL3115A2_CTRL_REG1, MPL3115A2_CTRL_REG1_RST);
+        while (read8(MPL3115A2_CTRL_REG1) & MPL3115A2_CTRL_REG1_RST)
+            sleep_ms(100); // Wait for reset to complete
+
+        // Set oversampling and altitude mode
+        currentMode = MPL3115A2_ALTIMETER;
+        _ctrl_reg1.reg = MPL3115A2_CTRL_REG1_OS128 | MPL3115A2_CTRL_REG1_ALT;
+        write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
+
+        // Enable data ready events for pressure/altitude and temperature
+        write8(MPL3115A2_PT_DATA_CFG, MPL3115A2_PT_DATA_CFG_TDEFE |
+                                      MPL3115A2_PT_DATA_CFG_PDEFE |
+                                      MPL3115A2_PT_DATA_CFG_DREM);
+
+        printf("MPL3115A2 initialization successful.\n");
+        return true; // Initialization successful
+    } else {
+        printf("Error: MPL3115A2 not detected on the I2C bus.\n");
+        return false; // Device not detected
     }
-
-    // Software reset
-    write8(MPL3115A2_CTRL_REG1, MPL3115A2_CTRL_REG1_RST);
-    while (read8(MPL3115A2_CTRL_REG1) & MPL3115A2_CTRL_REG1_RST)
-        sleep_ms(10);
-
-    // Set oversampling and altitude mode
-    currentMode = MPL3115A2_ALTIMETER;
-    _ctrl_reg1.reg = MPL3115A2_CTRL_REG1_OS128 | MPL3115A2_CTRL_REG1_ALT;
-    write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
-
-    // Enable data ready events for pressure/altitude and temperature
-    write8(MPL3115A2_PT_DATA_CFG, MPL3115A2_PT_DATA_CFG_TDEFE |
-                                  MPL3115A2_PT_DATA_CFG_PDEFE |
-                                  MPL3115A2_PT_DATA_CFG_DREM);
-
-    return true;
 }
+
+
+// Other functions remain unchanged
+
 
 /*!
  *  @brief  Get barometric pressure
@@ -166,5 +169,52 @@ bool Adafruit_MPL3115A2::conversionComplete(void) {
  * MPL3115A2_ALTITUDE, or MPL3115A2_TEMPERATURE
  *  @return The measurement value.
  */
+float Adafruit_MPL3115A2::getLastConversionResults(mpl3115a2_meas_t value) {
+    uint8_t buffer[5] = {MPL3115A2_REGISTER_PRESSURE_MSB, 0, 0, 0, 0};
+    i2c_write_blocking(i2c0, MPL3115A2_ADDRESS, &buffer[0], 1, true);
+    i2c_read_blocking(i2c0, MPL3115A2_ADDRESS, &buffer[1], 4, false);
 
-//todo missing half of code
+    switch (value) {
+        case MPL3115A2_PRESSURE: {
+            uint32_t pressure;
+            pressure = (uint32_t) buffer[1] << 16 | (uint32_t) buffer[2] << 8 | (uint32_t) buffer[3];
+            return (float) pressure / 6400.0;
+        }
+        case MPL3115A2_ALTITUDE: {
+            int32_t alt;
+            alt = (uint32_t) buffer[1] << 24 | (uint32_t) buffer[2] << 16 | (uint32_t) buffer[3] << 8;
+            return (float) alt / 65536.0;
+        }
+        case MPL3115A2_TEMPERATURE:
+        default: {
+            int16_t t;
+            t = (uint16_t) buffer[3] << 8 | (uint16_t) buffer[4];
+            return (float) t / 256.0;
+        }
+    }
+}
+
+/*!
+ *  @brief  read 1 byte of data at the specified address
+ *  @param  a
+ *          the address to read
+ *  @return the read data byte
+ */
+uint8_t Adafruit_MPL3115A2::read8(uint8_t a) {
+    uint8_t buffer[1] = {a};
+    i2c_write_blocking(i2c0, MPL3115A2_ADDRESS, buffer, 1, true);
+    i2c_read_blocking(i2c0, MPL3115A2_ADDRESS, buffer, 1, false);
+    return buffer[0];
+}
+
+/*!
+ *  @brief  write a byte of data to the specified address
+ *  @param  a
+ *          the address to write to
+ *  @param  d
+ *          the byte to write
+ */
+void Adafruit_MPL3115A2::write8(uint8_t a, uint8_t d) {
+    uint8_t buffer[2] = {a, d};
+    i2c_write_blocking(i2c0, MPL3115A2_ADDRESS, buffer, 2, false);
+}

@@ -17,10 +17,12 @@
 #include <pb_decode.h>
 #include "simple.pb.h"
 
+#include <MPL3115A2.h>
+
 ADXL345 accelerometer;
+Adafruit_MPL3115A2 baro;
 
-
-const TickType_t xpollRate = 100 / portTICK_PERIOD_MS;
+const TickType_t xpollRate = 500 / portTICK_PERIOD_MS;
 const TickType_t xblinkRate = 1000 / portTICK_PERIOD_MS;
 
 
@@ -30,6 +32,19 @@ void read_sensorsTask(void *pvParameters) {
                accelerometer.getX() * ADXL345_MG2G_MULTIPLIER * SENSORS_GRAVITY_STANDARD,
                accelerometer.getY() * ADXL345_MG2G_MULTIPLIER * SENSORS_GRAVITY_STANDARD,
                accelerometer.getZ() * ADXL345_MG2G_MULTIPLIER * SENSORS_GRAVITY_STANDARD
+        );
+
+        vTaskDelay(xpollRate); //todo make absolute time delay
+    }
+}
+
+
+void read_BarosensorsTask(void *pvParameters) {
+    while (true) {
+        printf("pressure: %f altitude: %f temp: %f\n",
+                baro.getPressure(),
+                baro.getAltitude(),
+                baro.getTemperature()
         );
 
         vTaskDelay(xpollRate); //todo make absolute time delay
@@ -69,8 +84,20 @@ void test_SD() {
 }
 
 void setup() {
-    accelerometer.begin(ADXL345_DEFAULT_ADDRESS, i2c_default, PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN);
-    accelerometer.setRange(ADXL345_RANGE_2_G); // set 2 g range
+//    accelerometer.begin(ADXL345_DEFAULT_ADDRESS, i2c_default, PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN);
+//    accelerometer.setRange(ADXL345_RANGE_2_G); // set 2 g range
+
+    sleep_ms(10000);
+    if(!baro.begin()) {
+        printf("Could not find sensor. Check wiring.");
+        while(1);
+    }
+
+
+    // use to set sea level pressure for current location
+    // this is needed for accurate altitude measurement
+    // STD SLP = 1013.26 hPa
+    baro.setSeaPressure(1022);
 }
 
 int main() {
@@ -79,7 +106,8 @@ int main() {
 
 //    test_SD(); // todo test the SD
 
-    xTaskCreate(read_sensorsTask, "read_sensorsTask", 256, NULL, 1, NULL);
+//    xTaskCreate(read_sensorsTask, "read_sensorsTask", 256, NULL, 1, NULL);
+    xTaskCreate(read_BarosensorsTask, "read_BarosensorsTask", 256, NULL, 1, NULL);
     xTaskCreate(led_task, "led_task", 256, NULL, 2, NULL);
     vTaskStartScheduler();
 

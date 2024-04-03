@@ -22,8 +22,8 @@
 ADXL345 accelerometer;
 Adafruit_MPL3115A2 baro;
 
-const TickType_t xpollRate = 500 / portTICK_PERIOD_MS;
-const TickType_t xblinkRate = 1000 / portTICK_PERIOD_MS;
+const TickType_t xpollRate = 100 / portTICK_PERIOD_MS;
+const TickType_t xblinkRate = 100 / portTICK_PERIOD_MS;
 
 
 void read_sensorsTask(void *pvParameters) {
@@ -41,10 +41,8 @@ void read_sensorsTask(void *pvParameters) {
 
 void read_BarosensorsTask(void *pvParameters) {
     while (true) {
-        printf("pressure: %f altitude: %f temp: %f\n",
-                baro.getPressure(),
-                baro.getAltitude(),
-                baro.getTemperature()
+        printf("altitude: %f\n",
+                baro.getAltitude()
         );
 
         vTaskDelay(xpollRate); //todo make absolute time delay

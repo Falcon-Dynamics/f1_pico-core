@@ -1,8 +1,9 @@
-#include "pico/stdlib.h"
-#include "hardware/i2c.h"
-
+// Adafruit_MCP9808.h
 #ifndef _ADAFRUIT_MCP9808_H
 #define _ADAFRUIT_MCP9808_H
+
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
 
 #define MCP9808_I2CADDR_DEFAULT 0x18 ///< I2C address
 #define MCP9808_REG_CONFIG 0x01      ///< MCP9808 config register
@@ -25,41 +26,25 @@
 #define MCP9808_REG_DEVICE_ID 0x07    ///< device ID
 #define MCP9808_REG_RESOLUTION 0x08   ///< resolutin
 
-/*!
- *    @brief  Class that stores state and functions for interacting with
- *            MCP9808 Temp Sensor
- */
-class Adafruit_MCP9808 : public Adafruit_Sensor {
+class Adafruit_MCP9808 {
 public:
     Adafruit_MCP9808();
     bool begin();
-    bool begin(TwoWire *theWire);
-    bool begin(uint8_t addr);
-    bool begin(uint8_t addr, TwoWire *theWire);
-
     bool init();
     float readTempC();
     float readTempF();
-    uint8_t getResolution(void);
+    uint8_t getResolution();
     void setResolution(uint8_t value);
-
-    void shutdown_wake(boolean sw);
+    void shutdown_wake(bool sw);
     void shutdown();
     void wake();
-
     void write16(uint8_t reg, uint16_t val);
     uint16_t read16(uint8_t reg);
-
     void write8(uint8_t reg, uint8_t val);
     uint8_t read8(uint8_t reg);
 
-    /* Unified Sensor API Functions */
-    bool getEvent(sensors_event_t *);
-    void getSensor(sensor_t *);
-
 private:
     uint16_t _sensorID = 9808; ///< ID number for temperature
-    Adafruit_I2CDevice *i2c_dev = NULL;
 };
 
-#endif
+#endif //_ADAFRUIT_MCP9808_H

@@ -22,6 +22,8 @@
 
 #include <MPL3115A2.h>
 
+using namespace std;
+
 ADXL345 accelerometer;
 Adafruit_MPL3115A2 baro;
 
@@ -72,17 +74,24 @@ void test_SD() {
     FRESULT fr = f_mount(&fs, "", 1);
     if (FR_OK != fr) panic("f_mount error: %s (%d)\n", FRESULT_str(fr), fr);
     FIL fil;
-    const char *const filename = "filename.txt";
-    fr = f_open(&fil, filename, FA_OPEN_APPEND | FA_WRITE);
-    if (FR_OK != fr && FR_EXIST != fr)
-        panic("f_open(%s) error: %s (%d)\n", filename, FRESULT_str(fr), fr);
-    if (f_printf(&fil, "Hello, world!\n") < 0) {
-        printf("f_printf failed\n");
+
+    for(;;) {
+
+        const char *const filename = "filename.txt";
+        fr = f_open(&fil, filename, FA_OPEN_APPEND | FA_WRITE);
+        if (FR_OK != fr && FR_EXIST != fr)
+            panic("f_open(%s) error: %s (%d)\n", filename, FRESULT_str(fr), fr);
+        if (f_printf(&fil, "Hello, world!\n") < 0) {
+            printf("f_printf failed\n");
+        }
+        fr = f_close(&fil);
+        if (FR_OK != fr) {
+            printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
+        }
+        
+        printf("file all good!!!\n");
     }
-    fr = f_close(&fil);
-    if (FR_OK != fr) {
-        printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
-    }
+
     f_unmount("");
 
     printf("file all good!!!\n");

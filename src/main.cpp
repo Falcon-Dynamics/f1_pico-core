@@ -65,6 +65,8 @@ void led_task(void *pvParameters) {
 }
 
 void test_SD() {
+    sleep_ms(10000);
+    printf("starting file write\n");
     time_init();
     FATFS fs;
     FRESULT fr = f_mount(&fs, "", 1);
@@ -82,6 +84,8 @@ void test_SD() {
         printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
     }
     f_unmount("");
+
+    printf("file all good!!!\n");
 }
 
 void testPB(){
@@ -115,27 +119,27 @@ void setup() {
 //    accelerometer.begin(ADXL345_DEFAULT_ADDRESS, i2c_default, PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN);
 //    accelerometer.setRange(ADXL345_RANGE_2_G); // set 2 g range
 
-    sleep_ms(10000);
-    if(!baro.begin()) {
-        printf("Could not find sensor. Check wiring.");
-        while(1);
-    }
-
-
-    // use to set sea level pressure for current location
-    // this is needed for accurate altitude measurement
-    // STD SLP = 1013.26 hPa
-    baro.setSeaPressure(1022);
+//    sleep_ms(10000);
+//    if(!baro.begin()) {
+//        printf("Could not find sensor. Check wiring.");
+//        while(1);
+//    }
+//
+//
+//    // use to set sea level pressure for current location
+//    // this is needed for accurate altitude measurement
+//    // STD SLP = 1013.26 hPa
+//    baro.setSeaPressure(1022);
 }
 
 int main() {
     stdio_init_all();
     setup();
 
-//    test_SD(); // todo test the SD
+    test_SD(); // todo test the SD
 
 //    xTaskCreate(read_sensorsTask, "read_sensorsTask", 256, NULL, 1, NULL);
-    xTaskCreate(read_BarosensorsTask, "read_BarosensorsTask", 256, NULL, 1, NULL);
+//    xTaskCreate(read_BarosensorsTask, "read_BarosensorsTask", 256, NULL, 1, NULL);
     xTaskCreate(led_task, "led_task", 256, NULL, 2, NULL);
     vTaskStartScheduler();
 
